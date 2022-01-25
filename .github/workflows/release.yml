@@ -1,0 +1,28 @@
+name: GitHub Actions Build and Deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+      run: |
+        cd forks/uniswap-sdk
+        npm install
+        npm run build
+        cd ../../
+        npm install
+        npm run postinstall
+        npm run build
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: git@github.com:bendaomaker/releases.git
+        BRANCH: pandaswap-exchange
+        FOLDER: dist
+        SSH_PRIVATE_KEY: ${{ secrets.RELEASE_PRI_KEY }}
